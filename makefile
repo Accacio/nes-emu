@@ -4,7 +4,8 @@
 # @file
 # @version 0.1
 #
-OBJ=main.cc cpu6502.cc
+SRC=$(wildcard *.cc)
+OBJ=$(SRC:%.cc=%.o)
 CXXFlags=-g
 BIN=nes-emu
 LINKER_FLAGS=-lncurses
@@ -12,7 +13,7 @@ LINKER_FLAGS=-lncurses
 all: $(OBJ)
 
 	@echo "all"
-	g++ $(CXXFlags)  -o $(BIN) $(LINKER_FLAGS) $^
+	g++ $(CXXFlags)  -o $(BIN) $^ $(LINKER_FLAGS)
 
 compile:
 	@echo "Compiling - Begin"
@@ -21,7 +22,7 @@ compile:
 
 %.o: %.c
 	@echo "compilng"
-	g++ $(CXXFlags) $(LINKER_FLAGS) $@ -c $<
+	g++ $(CXXFlags) $@ -c $<
 
 run:
 	@./$(BIN)
