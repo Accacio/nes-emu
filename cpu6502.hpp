@@ -4,11 +4,13 @@
 
 
 #include <cstdint>
+#include <ncurses.h>
 class cpu6502 {
     public:
         cpu6502();
         ~cpu6502();
 
+        void printRegistersAndFlags(WINDOW * regWin);
 // https://www.tutorialspoint.com/cprogramming/c_bit_fields.htm
     typedef union {
         uint_least8_t all;
