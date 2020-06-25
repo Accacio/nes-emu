@@ -1,12 +1,19 @@
 
 #include <iostream>
+#include <cstdint>
 #include <ncurses.h>
-#include "cpu6502.hpp"
+#include "CPU6502.hpp"
 
-int main(void)
+int main(int argc, char ** argv)
 {
-    cpu6502 cpu = cpu6502();
+    uint16_t addressBus;
+    uint8_t dataBus;
+    bool readWrite;
+
+    CPU6502 cpu = CPU6502(&addressBus, &dataBus, &readWrite);
     initscr();
+    start_color();
+    noecho();
     int height, width, startX,startY;
     height = 8;
     width = 20;
@@ -16,11 +23,12 @@ int main(void)
     getmaxyx(stdscr, yMax, xMax);
     WINDOW * regWin = newwin(height, xMax/4, 1, xMax*3/4-1);
     refresh();
-    box(regWin, 0,0);
-    wmove(regWin, 0, 2);
-    wrefresh(regWin);
-    start_color();
-    getch();
+    while (true){
+        cpu.printRegistersAndFlags(regWin);
+        refresh();
+        cpu.testRegistersAndFlags();
+        getch();
+    }
     endwin();
     return(0);
 }
