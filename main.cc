@@ -6,6 +6,17 @@
 
 int main(int argc, char ** argv)
 {
+    if (argc<=1){
+        std::cout << argv[0] << ": missing ROM operand" << std::endl;
+        return -1;
+    }
+    FILE * romFile;
+    // open file as read-only and binary
+    romFile = fopen(argv[1], "rb");
+    if (romFile==NULL){
+        std::cout << argv[0] << ": ROM file does not exist" << std::endl;
+        return -1;
+    }
     uint16_t addressBus;
     uint8_t dataBus;
     bool readWrite;
