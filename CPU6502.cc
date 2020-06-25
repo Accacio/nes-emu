@@ -1,16 +1,34 @@
 
-#include "cpu6502.hpp"
+#include "CPU6502.hpp"
 
-cpu6502::cpu6502(){
-   
+CPU6502:: CPU6502(uint16_t * _addressBus,uint8_t * _dataBus,bool * readWrite)
+{
+    PC.raw=0xFFFF;
+    addressBus = _addressBus;
+    dataBus = _dataBus;
+    R = (uint8_t*) readWrite;
 }
 
-cpu6502::~cpu6502(){
+CPU6502::~CPU6502(){
 
 }
 
-void cpu6502::printRegistersAndFlags(WINDOW * regWin) {
+// void CPU6502::ConnectBus(Bus *_bus) { bus = _bus;}
+void CPU6502::write(uint16_t address, uint8_t data){
+    // bus->write(address, data);
+}
 
+uint8_t CPU6502::read(uint16_t address){
+    // return bus->read(address);
+    return 0x00;
+}
+
+void CPU6502::exOp(){
+    // return bus->read(address);
+}
+
+void CPU6502::printRegistersAndFlags(WINDOW * regWin) {
+    box(regWin, 0,0);
     init_pair(2,COLOR_WHITE,COLOR_RED);
     init_pair(3,COLOR_WHITE,100);
     init_pair(4,COLOR_WHITE,COLOR_BLUE);
@@ -56,10 +74,20 @@ void cpu6502::printRegistersAndFlags(WINDOW * regWin) {
     wattroff(regWin, COLOR_PAIR(2));
     use_default_colors();
 
-    mvwprintw(regWin, 2, 2, "PC:      0x%2x   %d",pc,pc);
-    mvwprintw(regWin, 3, 2, "A:       0x%2x   %d",a,a);
-    mvwprintw(regWin, 4, 2, "X:       0x%2x   %d",x,x);
-    mvwprintw(regWin, 5, 2, "Y:       0x%2x   %d",y,y);
-    mvwprintw(regWin, 6, 2, "Stack P: 0x%4x %d",stack,stack);
+    mvwprintw(regWin, 2, 2, "PC:      0x%04x",PC.raw,PC.raw);
+    mvwprintw(regWin, 3, 2, "A:         0x%02x",A,A);
+    mvwprintw(regWin, 4, 2, "X:         0x%02x",X,X);
+    mvwprintw(regWin, 5, 2, "Y:         0x%02x",Y,Y);
+    mvwprintw(regWin, 6, 2, "Stack P:   0x%02x",S,S);
     wrefresh(regWin);
+    // refresh();
+}
+void CPU6502::testRegistersAndFlags(){
+        A++;
+        X++;
+        Y++;
+        S++;
+        PC.raw++;
+        status.raw++;
+
 }
