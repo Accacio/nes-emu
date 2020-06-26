@@ -26,13 +26,12 @@ int main(int argc, char ** argv)
     start_color();
     noecho();
     int height, width, startX,startY;
-    height = 8;
-    width = 20;
-    startX = 10;
-    startY = 10;
+    height = 8; width = 20; startX = 10; startY = 10;
     int yMax,xMax;
     getmaxyx(stdscr, yMax, xMax);
     WINDOW * regWin = newwin(height, xMax/4, 1, xMax*3/4-1);
+    WINDOW * codeWin = newwin(yMax -regWin->_begy- regWin->_maxy-1, xMax/4, regWin->_begy+regWin->_maxy+ 1, xMax*3/4-1);
+
     refresh();
     while (true){
         cpu.printRegistersAndFlags(regWin);
