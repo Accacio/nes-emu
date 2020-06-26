@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <ncurses.h>
 #include "CPU6502.hpp"
+#include "Cartridge.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -22,6 +23,7 @@ int main(int argc, char ** argv)
     bool readWrite;
 
     CPU6502 cpu = CPU6502(&addressBus, &dataBus, &readWrite);
+    Cartridge cartridge = Cartridge(romFile);
     initscr();
     start_color();
     noecho();
@@ -35,6 +37,7 @@ int main(int argc, char ** argv)
     refresh();
     while (true){
         cpu.printRegistersAndFlags(regWin);
+        cartridge.printCode(codeWin,cpu.PC.raw);
         refresh();
         cpu.testRegistersAndFlags();
         getch();
