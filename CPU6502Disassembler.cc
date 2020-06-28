@@ -8,17 +8,49 @@ CPU6502Disassembler::CPU6502Disassembler(){
     for (int i = 0; i < 256; i++) {
         instructionSet[i]={"???",NULL,IMMEDIATE,1,2}; // equal to nop
     }
+    //HI 0
+    Op(0x00, "BRK", NULL, IMPLIED, 1, 7); //https://www.masswerk.at/6502/6502_instruction_set.html#BRK
 
-    instructionList[0x00]={"BRK",1,7};
-    instructionList[0x78]={"SEI",1,3};
+    //HI 0
+
+    //HI 1
+
+    //HI 2
+
+    //HI 3
+
+    //HI 4
+
+    //HI 5
+
+    //HI 6
+
+    //HI 7
+    Op(0x78, "SEI", NULL, IMPLIED, 1, 3); //https://www.masswerk.at/6502/6502_instruction_set.html#SEI
+                                         
+    //HI 8
+
+    //HI 9
+
+    //HI A
+
+    //HI B
+
+    //HI C
+
+    //HI D
+
+    //HI E
+
+    //HI F
+
+   
 
 
-    std::cout << "hello from disassembler const " << instructionList[1].assembler << std::endl;
 }
 
 
 
 CPU6502Disassembler::~CPU6502Disassembler(){
-    std::cout << "hello from disassembler dst " << instructionList[0].assembler << std::endl;
-    delete []instructionList;
+    delete []instructionSet;
 }
