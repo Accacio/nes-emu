@@ -8,7 +8,19 @@ CPU6502Disassembler::CPU6502Disassembler(){
     for (int i = 0; i < 256; i++) {
         instructionSet[i]={"???",NULL,IMMEDIATE,1,2}; // equal to nop
     }
-    //HI 0
+    // *  add 1 to cycles if page boundery is crossed
+    // ** add 1 to cycles if branch occurs on same page
+    //    add 2 to cycles if branch occurs to different page
+
+    // ADC https://www.masswerk.at/6502/6502_instruction_set.html#ADC
+    Op(0x29, "ADC", NULL, IMMEDIATE, 2, 2); //
+    Op(0x25, "ADC", NULL, ZEROPAGE, 2, 3); //
+    Op(0x25, "ADC", NULL, ZEROPAGE_X_INDEXED, 2, 4); //
+    Op(0x2D, "ADC", NULL, ABSOLUTE, 3, 4); //
+    Op(0x3D, "ADC", NULL, ABSOLUTE_X_INDEXED, 3, 4); // *
+    Op(0x39, "ADC", NULL, ABSOLUTE_Y_INDEXED, 3, 4); // *
+    Op(0x21, "ADC", NULL, INDIRECT_X_INDEXED, 2, 6); //
+    Op(0x31, "ADC", NULL, INDIRECT_Y_INDEXED, 2, 5); // *
     Op(0x00, "BRK", NULL, IMPLIED, 1, 7); //https://www.masswerk.at/6502/6502_instruction_set.html#BRK
 
     //HI 0
