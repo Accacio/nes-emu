@@ -13,29 +13,32 @@ CPU6502Disassembler::CPU6502Disassembler(){
     //    add 2 to cycles if branch occurs to different page
 
     // ADC https://www.masswerk.at/6502/6502_instruction_set.html#ADC
-    Op(0x29, "ADC", NULL, IMMEDIATE, 2, 2); //
-    Op(0x25, "ADC", NULL, ZEROPAGE, 2, 3); //
-    Op(0x25, "ADC", NULL, ZEROPAGE_X_INDEXED, 2, 4); //
-    Op(0x2D, "ADC", NULL, ABSOLUTE, 3, 4); //
-    Op(0x3D, "ADC", NULL, ABSOLUTE_X_INDEXED, 3, 4); // *
-    Op(0x39, "ADC", NULL, ABSOLUTE_Y_INDEXED, 3, 4); // *
-    Op(0x21, "ADC", NULL, INDIRECT_X_INDEXED, 2, 6); //
-    Op(0x31, "ADC", NULL, INDIRECT_Y_INDEXED, 2, 5); // *
+    Op(0x69, "ADC", NULL, IMMEDIATE, 2, 2); //
+    Op(0x65, "ADC", NULL, ZEROPAGE, 2, 3); //
+    Op(0x75, "ADC", NULL, ZEROPAGE_X_INDEXED, 2, 4); //
+    Op(0x6D, "ADC", NULL, ABSOLUTE, 3, 4); //
+    Op(0x7D, "ADC", NULL, ABSOLUTE_X_INDEXED, 3, 4); // *
+    Op(0x79, "ADC", NULL, ABSOLUTE_Y_INDEXED, 3, 4); // *
+    Op(0x61, "ADC", NULL, INDIRECT_X_INDEXED, 2, 6); //
+    Op(0x71, "ADC", NULL, INDIRECT_Y_INDEXED, 2, 5); // *
+
+    // AND https://www.masswerk.at/6502/6502_instruction_set.html#AND
+    Op(0x29, "AND", NULL, IMMEDIATE, 2, 2); //
+    Op(0x25, "AND", NULL, ZEROPAGE, 2, 3); //
+    Op(0x25, "AND", NULL, ZEROPAGE_X_INDEXED, 2, 4); //
+    Op(0x2D, "AND", NULL, ABSOLUTE, 3, 4); //
+    Op(0x3D, "AND", NULL, ABSOLUTE_X_INDEXED, 3, 4); // *
+    Op(0x39, "AND", NULL, ABSOLUTE_Y_INDEXED, 3, 4); // *
+    Op(0x21, "AND", NULL, INDIRECT_X_INDEXED, 2, 6); //
+    Op(0x31, "AND", NULL, INDIRECT_Y_INDEXED, 2, 5); // *
+
+    // BRK https://www.masswerk.at/6502/6502_instruction_set.html#BRK
     Op(0x00, "BRK", NULL, IMPLIED, 1, 7); //https://www.masswerk.at/6502/6502_instruction_set.html#BRK
-
-    //HI 0
-
-    //HI 1
-
-    //HI 2
-
-    //HI 3
-
-    //HI 4
-
-    //HI 5
-
-    //HI 6
+                                          //
+                                          //
+    // https://www.masswerk.at/6502/6502_instruction_set.html#ORA
+    Op(0x01, "ORA", NULL, INDIRECT_X_INDEXED, 2, 6);
+    Op(0x05, "ORA", NULL, INDIRECT_X_INDEXED, 1, 7);
 
     //HI 7
     Op(0x78, "SEI", NULL, IMPLIED, 1, 3); //https://www.masswerk.at/6502/6502_instruction_set.html#SEI
