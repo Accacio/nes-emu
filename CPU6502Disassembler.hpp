@@ -19,7 +19,7 @@ class CPU6502Disassembler {
             uint8_t bytes;
             uint8_t cycles;
         };
-        Instruction * instructionList= new Instruction[256];
+        Instruction * instructionSet= new Instruction[256];
 
 };
 
