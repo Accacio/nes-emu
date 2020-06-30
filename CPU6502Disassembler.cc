@@ -5,8 +5,10 @@
 
 
 CPU6502Disassembler::CPU6502Disassembler(){
+    std::cout << "Disassembler Constructor";
+
     for (int i = 0; i < 256; i++) {
-        instructionSet[i]={"???",NULL,IMMEDIATE,1,2}; // equal to nop
+        Op(i,"???",NULL,IMMEDIATE,1,2); // equal to nop
     }
     // *  add 1 to cycles if page boundery is crossed
     // ** add 1 to cycles if branch occurs on same page
