@@ -40,6 +40,10 @@ class CPU6502 {
                 bool N :1; // negative
             };
         } status;
+        uint16_t getPC(){
+            return PC.raw;
+        }
+    // private:
 
         union {
             uint16_t raw;
