@@ -3,10 +3,11 @@
 
 CPU6502:: CPU6502(uint16_t * _addressBus,uint8_t * _dataBus,bool * readWrite)
 {
-    PC.raw=0xFFFF;
+    PC.raw=0x0000;
     addressBus = _addressBus;
     dataBus = _dataBus;
     R = (uint8_t*) readWrite;
+    // X=Y=A=0;
 }
 
 CPU6502::~CPU6502(){
@@ -74,11 +75,11 @@ void CPU6502::printRegistersAndFlags(WINDOW * regWin) {
     wattroff(regWin, COLOR_PAIR(2));
     use_default_colors();
 
-    mvwprintw(regWin, 2, 2, "PC:      0x%04x",PC.raw,PC.raw);
-    mvwprintw(regWin, 3, 2, "A:         0x%02x",A,A);
-    mvwprintw(regWin, 4, 2, "X:         0x%02x",X,X);
-    mvwprintw(regWin, 5, 2, "Y:         0x%02x",Y,Y);
-    mvwprintw(regWin, 6, 2, "Stack P:   0x%02x",S,S);
+    mvwprintw(regWin, 2, 2, "PC:      0x%04x",PC.raw);
+    mvwprintw(regWin, 3, 2, "A:         0x%02x",A);
+    mvwprintw(regWin, 4, 2, "X:         0x%02x",X);
+    mvwprintw(regWin, 5, 2, "Y:         0x%02x",Y);
+    mvwprintw(regWin, 6, 2, "Stack P:   0x%02x",S);
     wrefresh(regWin);
     // refresh();
 }
