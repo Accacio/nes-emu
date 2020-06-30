@@ -2,9 +2,9 @@
 #include "Cartridge.hpp"
 
 
-Cartridge::Cartridge(FILE * romFile){
+Cartridge::Cartridge(FILE * romFile,CPU6502Disassembler * _disassembler){
+    disassembler = _disassembler;
 // https://wiki.nesdev.com/w/index.php/NES_2.0
-
 
     // NES HEADER
     // nes roms begin with 'NES 1a'
@@ -147,10 +147,10 @@ Cartridge::Cartridge(FILE * romFile){
     // int i = 0x1FFF;
     // printf("value in PGR[%d] is %0x",i,PGR[i]);
 
-    int j = 0x6f;
-    printf("value in CHR[%d] is %4x",j,CHR[j]);
+    // int j = 0x6f;
+    // printf("value in CHR[%d] is %4x",j,CHR[j]);
     // fread(&GamePak::VRAM[0], vrom8count, 0x2000, fp);
-
+    disassemblePGR();
 }
 
 Cartridge::~Cartridge(){
@@ -158,14 +158,72 @@ Cartridge::~Cartridge(){
     delete CHR;
 }
 
+void Cartridge::disassemblePGR(){
+    std::string line;
+    for (int i = 0; i < 0x1000; i+=disassembler->instructionSet[PGR[i]].bytes) {
+        const char *name=disassembler->instructionSet[PGR[i]].assembler;
+        int bytes=disassembler->instructionSet[PGR[i]].bytes;
+        std::string numbers = "";
+        line =  "";
+        char number[4];
+        sprintf(number, "%04x",i);
+        line += number ;
+        line+=  ": ";
+        line += name;
+        line += " ";
+        if(bytes>1){
+            char number2[4];
+            if (bytes==2) {
+                sprintf(number, "%02x",PGR[i+1]);
+                numbers += number;
+            }
+            else if (bytes==3) {
+            sprintf(number, "%02x",PGR[i+1]);
+            sprintf(number2, "%02x",PGR[i+2]);
+                numbers += number2;
+                numbers += number; }
+        }
+        line+=numbers;
+
+        line += "\n";
+        DISASSEMBLED_CODE.push_back(line);
+        for (int j=0; j < bytes-1; j++) {
+            DISASSEMBLED_CODE.push_back("");
+        }
+    }
+}
 
 
-void Cartridge::printCode(WINDOW *codeWin,uint16_t PC)
+void Cartridge::printCode(WINDOW *codeWin,WINDOW *codePad,uint16_t * PC)
 {
+    wclear(codePad);
     box(codeWin, 0,0);
     init_pair(2,COLOR_WHITE,COLOR_RED);
     init_pair(3,COLOR_WHITE,100);
     init_pair(4,COLOR_WHITE,COLOR_BLUE);
+   
+    use_default_colors();
     mvwprintw(codeWin,0,2, " Code ");
+
+    for (int i = 0; i <DISASSEMBLED_CODE.size();i++)
+    {
+        if(i==*PC) wattron(codePad, COLOR_PAIR(4));
+        wprintw(codePad, DISASSEMBLED_CODE[i].c_str());
+        if(i==*PC) wattroff(codePad, COLOR_PAIR(4));
+    }
+    // wattron(codePad, COLOR_PAIR(4));
+    // wprintw(codePad, disassembler->instructionSet[0x00].assembler);
+    // wprintw(codePad, "\n");
+    // wattroff(codePad, COLOR_PAIR(4));
+    // wprintw(codePad, disassembler->instructionSet[PGR[*PC]].assembler);
+    *PC+=disassembler->instructionSet[PGR[*PC]].bytes-1;
+    // wprintw(codePad, "%d",PC);
+    // char* text;
+
+    // sprintf(text, "%x",newPC);
+    // wprintw(codePad,text);
+    mvwchgat(codePad, 1, 0, -1, A_NORMAL, 0, NULL);
+
     wrefresh(codeWin);
+    prefresh(codePad, 0, 0, codeWin->_begy+1, codeWin->_begx+1, codeWin->_begy+codeWin->_maxy-1, codeWin->_begx+codeWin->_maxx-1);
 }

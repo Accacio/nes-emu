@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include <cstring>
 #include <ncurses.h>
 #include "CPU6502.hpp"
 #include "Cartridge.hpp"
