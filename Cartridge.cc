@@ -171,6 +171,7 @@ void Cartridge::disassemblePGR(){
         line+=  ": ";
         line += name;
         line += " ";
+        // TODO correct transform to hex
         if(bytes>1){
             char number2[4];
             if (bytes==2) {
@@ -178,16 +179,51 @@ void Cartridge::disassemblePGR(){
                 numbers += number;
             }
             else if (bytes==3) {
-            sprintf(number, "%02x",PGR[i+1]);
-            sprintf(number2, "%02x",PGR[i+2]);
+                sprintf(number, "%02x",PGR[i+1]);
+                sprintf(number2, "%02x",PGR[i+2]);
                 numbers += number2;
-                numbers += number; }
+                numbers += number;
+            }
         }
-        line+=numbers;
+        // different for each mode
+        switch (disassembler->instructionSet[PGR[i]].addressing){
+        case CPU6502Disassembler::ACCUMULATOR:      // A       OPC A        operand is AC (implied single byte instruction)
+            line+=" A";
+                break;
+        case CPU6502Disassembler::ABSOLUTE:         // abs     OPC $LLHH    operand is address $HHLL *
+            line+=" $" + numbers;
+                break;
+        case CPU6502Disassembler::ABSOLUTE_X_INDEXED: // abs,X   OPC $LLHH,X  operand is address; effective address is address incremented by X with carry **
+        case CPU6502Disassembler::ZEROPAGE_X_INDEXED: // zpg,X   OPC $LL,X    operand is zeropage address; effective address is address incremented by X without carry **
+            line+=" $" + numbers + ", X";
+                break;
+        case CPU6502Disassembler::ABSOLUTE_Y_INDEXED: // abs,Y   OPC $LLHH,Y  operand is address; effective address is address incremented by Y with carry **
+        case CPU6502Disassembler::ZEROPAGE_Y_INDEXED: // zpg,Y   OPC $LL,Y    operand is zeropage address; effective address is address incremented by Y without carry **
+            line+=" $" + numbers + ", Y";
+                break;
+        case CPU6502Disassembler::IMMEDIATE:        // #       OPC #$BB     operand is byte BB
+            line+=" #$" + numbers;
+                break;
+        case CPU6502Disassembler::IMPLIED:          // impl.   OPC          operand implied
+                break;
+        case CPU6502Disassembler::INDIRECT:         // ind     OPC ($LLHH)  operand is address; effective address is contents of word at address: C.w($HHLL)
+            line+=" ($" + numbers +")";
+                break;
+        case CPU6502Disassembler::INDIRECT_X_INDEXED: // X,ind   OPC ($LL,X)  operand is zeropage address; effective address is word in (LL + X, LL + X + 1), inc. without carry: C.w($00LL + X)
+            line+=" ($" + numbers +"), X";
+                break;
+        case CPU6502Disassembler::INDIRECT_Y_INDEXED: // ind,Y   OPC ($LL),Y  operand is zeropage address; effective address is word in (LL, LL + 1) incremented by Y with carry: C.w($00LL) + Y
+            line+=" ($" + numbers +"), Y";
+                break;
+        case CPU6502Disassembler::RELATIVE:         // rel     OPC $BB      branch target is PC + signed offset BB ***
+        case CPU6502Disassembler::ZEROPAGE:         // zpg     OPC $LL      operand is zeropage address (hi-byte is zero, address = $00LL)
+            line+=" $" + numbers;
+                break;
+        }
 
         line += "\n";
         DISASSEMBLED_CODE.push_back(line);
-        for (int j=0; j < bytes-1; j++) {
+        for (int j=1; j < bytes; j++) {
             DISASSEMBLED_CODE.push_back("");
         }
     }
@@ -196,6 +232,8 @@ void Cartridge::disassemblePGR(){
 
 void Cartridge::printCode(WINDOW *codeWin,WINDOW *codePad,uint16_t * PC)
 {
+    int nlines = codeWin->_maxy-1;
+    int x,y;
     wclear(codePad);
     box(codeWin, 0,0);
     init_pair(2,COLOR_WHITE,COLOR_RED);
@@ -207,23 +245,19 @@ void Cartridge::printCode(WINDOW *codeWin,WINDOW *codePad,uint16_t * PC)
 
     for (int i = 0; i <DISASSEMBLED_CODE.size();i++)
     {
-        if(i==*PC) wattron(codePad, COLOR_PAIR(4));
+        if(i==*PC){
+            wattron(codePad, COLOR_PAIR(4));
+            getyx(codePad,y,x);
+        }
         wprintw(codePad, DISASSEMBLED_CODE[i].c_str());
         if(i==*PC) wattroff(codePad, COLOR_PAIR(4));
     }
-    // wattron(codePad, COLOR_PAIR(4));
-    // wprintw(codePad, disassembler->instructionSet[0x00].assembler);
-    // wprintw(codePad, "\n");
-    // wattroff(codePad, COLOR_PAIR(4));
-    // wprintw(codePad, disassembler->instructionSet[PGR[*PC]].assembler);
-    *PC+=disassembler->instructionSet[PGR[*PC]].bytes-1;
-    // wprintw(codePad, "%d",PC);
-    // char* text;
+    mvwprintw(codeWin,0,7, " %d %d (%d,%d) %d",nlines, y/nlines,x,y,(y/nlines)*nlines);
 
-    // sprintf(text, "%x",newPC);
-    // wprintw(codePad,text);
-    mvwchgat(codePad, 1, 0, -1, A_NORMAL, 0, NULL);
+    *PC+=disassembler->instructionSet[PGR[*PC]].bytes-1;
+
+    // mvwchgat(codePad, 1, 0, -1, A_NORMAL, 0, NULL); //maldito
 
     wrefresh(codeWin);
-    prefresh(codePad, 0, 0, codeWin->_begy+1, codeWin->_begx+1, codeWin->_begy+codeWin->_maxy-1, codeWin->_begx+codeWin->_maxx-1);
+    prefresh(codePad, (y/nlines)*nlines, 0, codeWin->_begy+1, codeWin->_begx+1, codeWin->_begy+codeWin->_maxy-1, codeWin->_begx+codeWin->_maxx-1);
 }
